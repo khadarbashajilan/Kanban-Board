@@ -1,6 +1,10 @@
 import Layout from "./layouts/Layout";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import NotFoundPage from "./pages/NotFoundPage";
+import BoardsList from "./pages/BoardsList";
+import BoardDetails from "./pages/BoardDetails";
+import CardDetails from "./pages/CardDetails";
 
 function App() {
   const routes = [
@@ -11,7 +15,7 @@ function App() {
       children: [
         {
           path: "/",
-          element: <BoardsList />,
+          element: <BoardsList/>,
         },
         {
           path: "/boards",
