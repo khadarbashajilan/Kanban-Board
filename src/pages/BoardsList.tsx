@@ -2,17 +2,25 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Layout, Plus } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../types/type";
+import { createBoard } from "../store/boardSlice";
 
 const BoardsList = () => {
   const [newBoardTitle, setNewBoardTitle] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
 
+
+  const dispatch = useDispatch();
+  const boards = useSelector((state:RootState)=> state.boards.items);
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (newBoardTitle) {
       const id = crypto.randomUUID();
       // send title and Id to redux
+      dispatch(createBoard({id, title:newBoardTitle}))
       setNewBoardTitle("");
       setIsCreating(false);
       navigate(`/boards/${id}`);
@@ -55,14 +63,21 @@ const BoardsList = () => {
           </form>
 
           <div className="grid gap-4 grid-cols-1 500px:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            <div className="cursor-pointer bg-primary text-dark rounded-sm px-6   flex flex-col items-center gap-4">
+            {Object.values(boards).map((board)=>(
+
+            <div 
+            key={board.id}
+            onClick={()=>navigate(`/boards/${board.id}`)}
+            className="cursor-pointer bg-primary text-dark rounded-sm px-6   flex flex-col items-center gap-4">
               <div className="flex flex-col gap-4 items-center">
                 <Layout className="size-8" />
-                <h2 className="text-xl font-semibold">Borad Title</h2>
+                <h2 className="text-xl font-semibold">{board.title}</h2>
               </div>
 
-              <p>2 Cards</p>
+              <p>{board.cards.length<2 ? "1 Card" : `${board.cards.length} Cards`}</p>
             </div>
+
+            ))}
           </div>
         </>
       )}

@@ -5,6 +5,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 import BoardsList from "./pages/BoardsList";
 import BoardDetails from "./pages/BoardDetails";
 import CardDetails from "./pages/CardDetails";
+import { Provider } from "react-redux";
+import { store } from "./store/config";
 
 function App() {
   const routes = [
@@ -35,7 +37,12 @@ function App() {
 
   const router = createBrowserRouter(routes);
 
-  return <RouterProvider router={router} />;
+  return (
+
+    <Provider store={store}>
+  <RouterProvider router={router} />
+  </Provider>
+  )
 }
 
 export default App;
