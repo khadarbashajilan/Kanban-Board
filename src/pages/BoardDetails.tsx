@@ -1,5 +1,5 @@
-import { useSelector } from 'react-redux'
-import type { RootState } from '../types/type'
+import { useDispatch, useSelector } from 'react-redux'
+import type {  Card, RootState } from '../types/type'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -10,6 +10,8 @@ const BoardDetails = () => {
 
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   const board = useSelector((state:RootState) => boardId?  state.boards.items[boardId] : null)
 
   const columns = [
@@ -19,8 +21,21 @@ const BoardDetails = () => {
   ]
 
   const [isAddingCard, setisAddingCard] = useState<boolean>(false);
+  const [newCardTitle, setnewCardTitle] = useState<string>("");
 
-
+  function handleAddCard(e:React.FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    const newCard:Card = {
+      id:crypto.randomUUID(),
+      title:newCardTitle,
+      description:"",
+      status:"todo",
+      createAt: new Date().toISOString()
+    }
+    dispatch(addCard({boardId, card:newCard}));
+    setnewCardTitle("");
+    setisAddingCard(false);
+  }
 
   return !board?
   (
@@ -42,7 +57,6 @@ const BoardDetails = () => {
           </button>
           <h1>{board.title}</h1>
         </div>
-
         <div>
           <button onClick={()=>setisAddingCard(true)}><Plus/>Add Card</button>
           <button ><Trash2/>Delete Card</button>
@@ -50,8 +64,10 @@ const BoardDetails = () => {
       </div>
 
 {     isAddingCard &&
-      <form>
-        <input type="text" name="" id="" placeholder='Card Title'/>
+      <form onSubmit={(e)=>{handleAddCard(e)}}>
+        <input type="text" name="" id="" placeholder='Card Title'
+        value={newCardTitle}
+        />
         <div>
           <button onClick={()=>setisAddingCard(false)} type='button'>Cancel</button>
           <button type='submit'>Add</button>
