@@ -24,8 +24,8 @@ const boardsSlice = createSlice({
                 title:action.payload.title,
                 cards:[],
             }
-        }
-    }
+        },
+    },
 });
 
 export const {createBoard} = boardsSlice.actions;

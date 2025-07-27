@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { Layout, Plus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../types/type";
@@ -23,7 +22,8 @@ const BoardsList = () => {
       dispatch(createBoard({id, title:newBoardTitle}))
       setNewBoardTitle("");
       setIsCreating(false);
-      navigate(`/boards/${id}`);
+      console.log(Object.values(boards)); //log the values of boards to verify creation
+       navigate(`/boards/${id}`);
     }
   }
 
