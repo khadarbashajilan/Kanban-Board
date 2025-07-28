@@ -32,9 +32,16 @@ const boardsSlice = createSlice({
         deleteCard:(state, action:PayloadAction<{boardId:string}>)=>{
             delete state.items[action.payload.boardId];
         },
+        updateCard:(state, action:PayloadAction<{boardId:string,card:Card}>)=>{
+            const board = state.items[action.payload.boardId];
+            if(board){
+                const index = board.cards.findIndex(card=>card.id === action.payload.card.id)
+                board.cards[index] = action.payload.card;
+            }
+        }
     },
 });
 
-export const {createBoard,deleteCard ,addCard} = boardsSlice.actions;
+export const {createBoard,deleteCard, updateCard ,addCard} = boardsSlice.actions;
 
 export default boardsSlice.reducer;

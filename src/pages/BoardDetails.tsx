@@ -3,7 +3,7 @@ import type {  Card, RootState } from '../types/type'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { addCard, deleteCard } from '../store/boardSlice';
+import { addCard, deleteCard, updateCard } from '../store/boardSlice';
 
 const BoardDetails = () => {
 
@@ -23,6 +23,8 @@ const BoardDetails = () => {
 
   const [isAddingCard, setisAddingCard] = useState<boolean>(false);
   const [newCardTitle, setnewCardTitle] = useState<string>("");
+
+  const[DraggedCard, setdraggedCard] = useState<Card|null>(null);
 
   function handleAddCard(e:React.FormEvent<HTMLFormElement>){
     e.preventDefault();
@@ -51,6 +53,28 @@ const BoardDetails = () => {
       navigate("/boards");
     }
   }
+  // Drag
+
+  function handleDragStart(card:Card){
+    setdraggedCard(card);
+  }
+
+  function allowOnDrop(e:React.DragEvent){
+    e.preventDefault();
+  }
+
+  function handleDrop(status:Card["status"]){
+    if(DraggedCard && boardId && status!==DraggedCard.status){
+      const updtdCard:Card={
+        ...DraggedCard,
+        status
+      }
+      dispatch(updateCard({boardId, card:updtdCard}));
+      setdraggedCard(null);
+    }
+  }
+
+
 
   return !board?
   (
@@ -97,15 +121,16 @@ const BoardDetails = () => {
       <div className="grid gap-4 grid-cols-1 500px:grid-cols-2 md:grid-cols-3">
       {
         columns.map((col)=>(
-          <div key={col.id}>
-            <h2>{col.title}</h2>
-
-            <div>
+          <div key={col.id}  onDragOver={(e)=>allowOnDrop(e)}  onDrop={()=>handleDrop(col.id as Card["status"])}>
+            <h2 className='text-2xl font-extrabold text-primary'>
+              {col.title}
+            </h2>
+            <div className='flex flex-wrap gap-2 *:bg-primary-light *:text-dark *:p-4 *:rounded-sm *:space-y-2'>
               {board.cards.filter(card=>card.status === col.id)
               .map((card)=>(
-                <div key={card.id}>
-                  <h3>{card.title}</h3>
-                  <p>{new Date(card.createAt).toLocaleDateString()}</p>
+                <div key={card.id} draggable onDragStart={()=>handleDragStart(card)}>
+                  <h3 className='font-bold'>{card.title}</h3>
+                  <p className='text-sm text-dark-light'>{new Date(card.createAt).toLocaleDateString()}</p>
                 </div>
               ))}
             </div>
