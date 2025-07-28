@@ -1,5 +1,5 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit"
-import type { Board } from "../types/type";
+import type { Board, Card } from "../types/type";
 
 
 interface BoardsState{
@@ -25,9 +25,16 @@ const boardsSlice = createSlice({
                 cards:[],
             }
         },
+        addCard:(state, action: PayloadAction<{boardId:string, card:Card}>) =>{
+            const board = state.items[action.payload.boardId]
+            board.cards.push(action.payload.card);
+        },
+        deleteCard:(state, action:PayloadAction<{boardId:string}>)=>{
+            delete state.items[action.payload.boardId];
+        },
     },
 });
 
-export const {createBoard} = boardsSlice.actions;
+export const {createBoard,deleteCard ,addCard} = boardsSlice.actions;
 
 export default boardsSlice.reducer;

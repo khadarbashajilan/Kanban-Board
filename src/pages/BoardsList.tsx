@@ -16,7 +16,7 @@ const BoardsList = () => {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (newBoardTitle) {
+    if (newBoardTitle.trim()) {
       const id = crypto.randomUUID();
       // send title and Id to redux
       dispatch(createBoard({id, title:newBoardTitle}))

@@ -3,10 +3,11 @@ import type {  Card, RootState } from '../types/type'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { addCard, deleteCard } from '../store/boardSlice';
 
 const BoardDetails = () => {
 
-  const {boardId}= useParams();
+  const {boardId}= useParams<string>();
 
   const navigate = useNavigate();
 
@@ -25,16 +26,30 @@ const BoardDetails = () => {
 
   function handleAddCard(e:React.FormEvent<HTMLFormElement>){
     e.preventDefault();
-    const newCard:Card = {
-      id:crypto.randomUUID(),
-      title:newCardTitle,
-      description:"",
-      status:"todo",
-      createAt: new Date().toISOString()
+    if(newCardTitle.trim() && boardId){
+
+      const newCard:Card = {
+        id:crypto.randomUUID(),
+        title:newCardTitle,
+        description:"",
+        status:"todo",
+        createAt: new Date().toISOString()
+
+      }
+      dispatch(addCard({ boardId , card:newCard}));
+      setnewCardTitle("");
+      setisAddingCard(false);
     }
-    dispatch(addCard({boardId, card:newCard}));
-    setnewCardTitle("");
-    setisAddingCard(false);
+  }
+
+  function handleDeleteCard(){
+    if(boardId){
+
+      dispatch(deleteCard({boardId}));
+      setnewCardTitle("");
+      setisAddingCard(false);
+      navigate("/boards");
+    }
   }
 
   return !board?
@@ -49,8 +64,8 @@ const BoardDetails = () => {
     >Back to Boards</button>
     </section>
   ):(
-    <section>
-      <div>
+    <section className='flex flex-col gap-12'>
+      <div className='flex flex-col gap-6 md:flex-row'>
         <div>
           <button onClick={()=>navigate("/boards")}>
             <ArrowLeft/>
@@ -59,7 +74,7 @@ const BoardDetails = () => {
         </div>
         <div>
           <button onClick={()=>setisAddingCard(true)}><Plus/>Add Card</button>
-          <button ><Trash2/>Delete Card</button>
+          <button onClick={()=>handleDeleteCard()}><Trash2/>Delete Card</button>
         </div>
       </div>
 
@@ -67,6 +82,7 @@ const BoardDetails = () => {
       <form onSubmit={(e)=>{handleAddCard(e)}}>
         <input type="text" name="" id="" placeholder='Card Title'
         value={newCardTitle}
+        onChange={(e)=>setnewCardTitle(e.target.value)}
         />
         <div>
           <button onClick={()=>setisAddingCard(false)} type='button'>Cancel</button>
