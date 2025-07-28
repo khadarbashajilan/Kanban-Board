@@ -65,33 +65,36 @@ const BoardDetails = () => {
     </section>
   ):(
     <section className='flex flex-col gap-12'>
-      <div className='flex flex-col gap-6 md:flex-row'>
-        <div>
-          <button onClick={()=>navigate("/boards")}>
-            <ArrowLeft/>
+      <div className='flex flex-col gap-6 md:flex-row md:justify-between md:items-center'>
+        <div className='flex flex-col gap-6 items-start md:flex-row md:items-center'>
+          <button onClick={()=>navigate("/boards")}
+            className='p-2 bg-primary rounded-full'>
+            <ArrowLeft className='size-4 text-dark'/>
           </button>
-          <h1>{board.title}</h1>
+          <h1 className='text-4xl font-bold text-primary text-center'>{board.title}</h1>
         </div>
-        <div>
+        <div className='flex flex-col gap-4 *:grow *:px-4 *:py-2 *:rounded-sm *:border *:border-primary *:flex *:gap-4 *:justify-center 500px:flex-row md:self-center'>
           <button onClick={()=>setisAddingCard(true)}><Plus/>Add Card</button>
           <button onClick={()=>handleDeleteCard()}><Trash2/>Delete Card</button>
         </div>
       </div>
 
 {     isAddingCard &&
-      <form onSubmit={(e)=>{handleAddCard(e)}}>
-        <input type="text" name="" id="" placeholder='Card Title'
+      <form onSubmit={(e)=>{handleAddCard(e)}}
+      className='flex flex-col gap-4 max-w-screen-500px'>
+        <input type="text" placeholder='Card Title'
         value={newCardTitle}
+        className='bg-primary text-dark px-4 py-2 rounded-sm placeholder:text-gray-600 outline-none'
         onChange={(e)=>setnewCardTitle(e.target.value)}
         />
-        <div>
+          <div className="flex gap-2 *:grow *:px-4 *:py-2 *:rounded-sm *:border *:border-primary">
           <button onClick={()=>setisAddingCard(false)} type='button'>Cancel</button>
           <button type='submit'>Add</button>
         </div>
       </form>
 }
 
-    <div>
+      <div className="grid gap-4 grid-cols-1 500px:grid-cols-2 md:grid-cols-3">
       {
         columns.map((col)=>(
           <div key={col.id}>
