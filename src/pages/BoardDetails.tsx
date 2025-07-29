@@ -6,30 +6,51 @@ import { useState } from "react";
 import { addCard, deleteBoard, updateCard } from "../store/boardSlice";
 
 const BoardDetails = () => {
+  // Extracting boardId from the URL parameters
+  // This allows us to fetch the specific board details based on the ID in the URL
   const { boardId } = useParams<string>();
 
+  // Using useNavigate to programmatically navigate between routes
+  // This is useful for redirecting users after actions like adding or deleting a board
   const navigate = useNavigate();
+
+  // Using useDispatch to dispatch actions to the Redux store
+  // This allows us to modify the state, such as adding a card or deleting a board
 
   const dispatch = useDispatch();
 
+  // The useSelector hook is used to access the Redux state
+  // Here, we are selecting the board based on the boardId from the Redux store
   const board = useSelector((state: RootState) =>
     boardId ? state.boards.items[boardId] : null
   );
 
+  // Defining the columns for the Kanban board
+  // Each column represents a status of the cards in the board
   const columns = [
     { id: "todo", title: "To Do" },
     { id: "inprogress", title: "In Progress" },
     { id: "done", title: "Done" },
   ];
 
+  // State variables for managing the UI
+  // isAddingCard controls the visibility of the card addition form
   const [isAddingCard, setisAddingCard] = useState<boolean>(false);
+  // newCardTitle holds the title of the new card being added
+  // It is updated as the user types in the input field
   const [newCardTitle, setnewCardTitle] = useState<string>("");
 
+  // DraggedCard holds the card that is currently being dragged
+  // It is used to update the card's status when dropped into a different column
   const [DraggedCard, setdraggedCard] = useState<Card | null>(null);
 
+  // Function to handle adding a new card
   function handleAddCard(e: React.FormEvent<HTMLFormElement>) {
+    // It prevents the default form submission behavior, checks if the card title is not empty,
     e.preventDefault();
     if (newCardTitle.trim() && boardId) {
+      // Creates a new card object with a unique ID, title, status, and creation date
+      // The crypto.randomUUID() function generates a unique identifier for the card
       const newCard: Card = {
         id: crypto.randomUUID(),
         title: newCardTitle,
@@ -37,14 +58,20 @@ const BoardDetails = () => {
         status: "todo",
         createAt: new Date().toISOString(),
       };
+      // and then dispatches the addCard action to the Redux store
       dispatch(addCard({ boardId, card: newCard }));
       setnewCardTitle("");
       setisAddingCard(false);
     }
   }
 
-  function handleDeleteCard() {
-    if (boardId) {
+  // Function to handle deleting the board
+  function handleDeleteBoard() {
+    // It checks if the boardId exists and prompts the user for confirmation before proceeding
+    if (
+      boardId &&
+      window.confirm("Are you sure you want to delete this board?")
+    ) {
       dispatch(deleteBoard({ boardId }));
       setnewCardTitle("");
       setisAddingCard(false);
@@ -52,22 +79,33 @@ const BoardDetails = () => {
     }
   }
   // Drag
-
+  // Drop functionality
+  // This section handles the drag-and-drop functionality for cards within the board
   function handleDragStart(card: Card) {
+    // When a card is dragged, it sets the DraggedCard state to the card being dragged
+    // This allows us to track which card is currently being moved
     setdraggedCard(card);
   }
 
+  // allowOnDrop prevents the default behavior of the dragover event
+  // This is necessary to allow dropping elements onto the target area
   function allowOnDrop(e: React.DragEvent) {
     e.preventDefault();
   }
 
+  // handleDrop updates the status of the dragged card when it is dropped into a new column
   function handleDrop(status: Card["status"]) {
+    // It checks if the DraggedCard exists, the boardId is valid, and the new status is different from the current status of the card
     if (DraggedCard && boardId && status !== DraggedCard.status) {
+      // If all conditions are met, it creates an updated card object with the new status and dispatches the updateCard action to the Redux store
       const updtdCard: Card = {
         ...DraggedCard,
         status,
       };
+      // This updates the card's status to reflect its new position in the Kanban board
+      // Finally, it dispatches the updateCard action to the Redux store to update the card
       dispatch(updateCard({ boardId, card: updtdCard }));
+      // Finally, it resets the DraggedCard state to null
       setdraggedCard(null);
     }
   }
@@ -103,9 +141,9 @@ const BoardDetails = () => {
             <Plus />
             Add Card
           </button>
-          <button onClick={() => handleDeleteCard()}>
+          <button onClick={() => handleDeleteBoard()}>
             <Trash2 />
-            Delete Card
+            Delete Board
           </button>
         </div>
       </div>
