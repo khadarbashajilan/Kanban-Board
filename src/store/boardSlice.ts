@@ -29,7 +29,7 @@ const boardsSlice = createSlice({
             const board = state.items[action.payload.boardId]
             board.cards.push(action.payload.card);
         },
-        deleteCard:(state, action:PayloadAction<{boardId:string}>)=>{
+        deleteBoard:(state, action:PayloadAction<{boardId:string}>)=>{
             delete state.items[action.payload.boardId];
         },
         updateCard:(state, action:PayloadAction<{boardId:string,card:Card}>)=>{
@@ -38,10 +38,14 @@ const boardsSlice = createSlice({
                 const index = board.cards.findIndex(card=>card.id === action.payload.card.id)
                 board.cards[index] = action.payload.card;
             }
+        },
+        deleteCard:(state, action:PayloadAction<{boardId:string, card:Card}>)=>{
+            const board = state.items[action.payload.boardId];
+            board.cards = board.cards.filter((each)=> each.id != action.payload.card.id);
         }
     },
 });
 
-export const {createBoard,deleteCard, updateCard ,addCard} = boardsSlice.actions;
+export const {createBoard,deleteBoard, deleteCard, updateCard ,addCard} = boardsSlice.actions;
 
 export default boardsSlice.reducer;

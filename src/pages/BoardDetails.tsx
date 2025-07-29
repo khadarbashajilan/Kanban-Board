@@ -3,7 +3,7 @@ import type { Card, RootState } from "../types/type";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { addCard, deleteCard, updateCard } from "../store/boardSlice";
+import { addCard, deleteBoard, updateCard } from "../store/boardSlice";
 
 const BoardDetails = () => {
   const { boardId } = useParams<string>();
@@ -45,7 +45,7 @@ const BoardDetails = () => {
 
   function handleDeleteCard() {
     if (boardId) {
-      dispatch(deleteCard({ boardId }));
+      dispatch(deleteBoard({ boardId }));
       setnewCardTitle("");
       setisAddingCard(false);
       navigate("/boards");
